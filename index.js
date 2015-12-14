@@ -1,0 +1,24 @@
+var gobble = require( 'gobble' );
+var sander = gobble.sander;
+var Promise = sander.Promise;
+
+var path = require( 'path' );
+var Mocha = require('mocha');
+
+module.exports = function mocha ( inputdir, options, cb ) {
+  options = options || {};
+
+  var mocha = new Mocha( options );
+
+  mocha.files = sander.readdirSync( inputdir, options.testDir ).filter( n => n.endsWith('.js') ).map(function ( file ) {
+    return path.join( inputdir, options.testDir, file );
+  });
+
+  mocha.run(function ( failures ) {
+    mocha.files.forEach(function ( file ) {
+      delete require.cache[ file ];
+    });
+
+    cb( failures );
+  });
+};
