@@ -19,6 +19,12 @@ module.exports = function mocha ( inputdir, options, cb ) {
       delete require.cache[ file ];
     });
 
-    cb( failures );
+    if (options.reportOnly) {
+      cb();
+    } else if (failures > 0) {
+      cb(new Error('Mocha runner reported some failures.'));
+    } else {
+      cb();
+    }
   });
 };
